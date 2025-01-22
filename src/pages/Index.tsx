@@ -1,3 +1,5 @@
+import ChatSection from "@/components/ChatSection";
+
 const Index = () => {
   return (
     <div className="min-h-screen p-4 bg-gray-50">
