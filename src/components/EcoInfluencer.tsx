@@ -1,58 +1,32 @@
 import React from "react";
-import { Share, Award, UserPlus, Heart, Leaf, Users, Trophy, TreePine } from "lucide-react";
+import { Share, MessageCircle, Heart, Bookmark, MoreHorizontal, TreePine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar } from "@/components/ui/avatar";
 
-interface Reward {
-  id: number;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-}
-
 interface Stats {
-  followers: number;
-  impact: number;
+  likes: number;
+  comments: number;
   trees: number;
 }
 
-const rewards: Reward[] = [
-  {
-    id: 1,
-    name: "Eco Event Access",
-    description: "Exclusive access to sustainable project events",
-    icon: <Award className="h-6 w-6 text-green-500" />,
-  },
-  {
-    id: 2,
-    name: "Community Leader",
-    description: "Private discussions with project leaders",
-    icon: <UserPlus className="h-6 w-6 text-blue-500" />,
-  },
-  {
-    id: 3,
-    name: "Green Products",
-    description: "Eco-friendly product rewards",
-    icon: <Leaf className="h-6 w-6 text-emerald-500" />,
-  },
-];
-
 const userStats: Stats = {
-  followers: 1234,
-  impact: 89,
+  likes: 1234,
+  comments: 89,
   trees: 45,
 };
 
 const EcoInfluencer = () => {
   const { toast } = useToast();
+  const [isLiked, setIsLiked] = React.useState(false);
+  const [isSaved, setIsSaved] = React.useState(false);
 
   const handleShare = async () => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "My Eco-Influencer Scorecard",
+          title: "My Eco Journey",
           text: "Check out my impact on sustainable projects!",
           url: window.location.href,
         });
@@ -60,90 +34,99 @@ const EcoInfluencer = () => {
         await navigator.clipboard.writeText(window.location.href);
         toast({
           title: "Link copied!",
-          description: "Share your scorecard link with others",
+          description: "Share your eco journey with others",
         });
       }
     } catch (error) {
       console.error("Error sharing:", error);
       toast({
         variant: "destructive",
-        title: "Error sharing scorecard",
+        title: "Error sharing post",
         description: "Please try again later",
       });
     }
   };
 
   return (
-    <div className="space-y-8 p-6 bg-white rounded-xl shadow-sm">
-      {/* Profile Header - Instagram Style */}
-      <div className="flex flex-col md:flex-row items-center gap-6">
-        <Avatar className="w-24 h-24 border-2 border-green-500">
-          <img
-            src="https://github.com/shadcn.png"
-            alt="Profile"
-            className="rounded-full"
-          />
-        </Avatar>
-        
-        <div className="flex-1 text-center md:text-left">
-          <h2 className="text-2xl font-bold mb-2">Eco Champion</h2>
-          <div className="flex flex-wrap justify-center md:justify-start gap-6 mb-4">
-            <div className="text-center">
-              <span className="block font-bold text-xl">{userStats.followers}</span>
-              <span className="text-sm text-gray-600">Followers</span>
-            </div>
-            <div className="text-center">
-              <span className="block font-bold text-xl">{userStats.impact}%</span>
-              <span className="text-sm text-gray-600">Impact Score</span>
-            </div>
-            <div className="text-center">
-              <span className="block font-bold text-xl">{userStats.trees}</span>
-              <span className="text-sm text-gray-600">Trees Planted</span>
-            </div>
+    <Card className="max-w-xl mx-auto overflow-hidden">
+      {/* Post Header */}
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-3">
+          <Avatar className="w-8 h-8">
+            <img
+              src="https://github.com/shadcn.png"
+              alt="Profile"
+              className="rounded-full"
+            />
+          </Avatar>
+          <div>
+            <h3 className="font-semibold text-sm">eco_champion</h3>
+            <p className="text-xs text-muted-foreground">Level 3 Influencer</p>
           </div>
-          <Button onClick={handleShare} className="gap-2">
-            <Share className="h-4 w-4" />
-            Share Profile
+        </div>
+        <Button variant="ghost" size="icon">
+          <MoreHorizontal className="h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Post Image */}
+      <div className="relative aspect-square bg-muted">
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+          alt="Eco Project"
+          className="object-cover w-full h-full"
+        />
+        <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full flex items-center gap-2">
+          <TreePine className="h-4 w-4" />
+          <span className="text-sm font-medium">{userStats.trees} Trees Planted</span>
+        </div>
+      </div>
+
+      {/* Post Actions */}
+      <div className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsLiked(!isLiked)}
+              className={isLiked ? "text-red-500" : ""}
+            >
+              <Heart className="h-6 w-6" fill={isLiked ? "currentColor" : "none"} />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <MessageCircle className="h-6 w-6" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleShare}>
+              <Share className="h-6 w-6" />
+            </Button>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setIsSaved(!isSaved)}
+          >
+            <Bookmark 
+              className="h-6 w-6" 
+              fill={isSaved ? "currentColor" : "none"} 
+            />
           </Button>
         </div>
-      </div>
 
-      {/* Stats Cards - Instagram Grid Style */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {rewards.map((reward) => (
-          <Card 
-            key={reward.id} 
-            className="p-4 hover:shadow-md transition-shadow duration-200 cursor-pointer"
-          >
-            <div className="flex items-start space-x-4">
-              <div className="p-2 bg-gray-50 rounded-lg">
-                {reward.icon}
-              </div>
-              <div>
-                <h3 className="font-semibold">{reward.name}</h3>
-                <p className="text-sm text-gray-600">{reward.description}</p>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {/* Achievement Banner */}
-      <div className="rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 p-6">
-        <div className="flex items-center gap-4">
-          <div className="flex -space-x-2">
-            <Trophy className="h-6 w-6 text-yellow-500" />
-            <TreePine className="h-6 w-6 text-green-600" />
-          </div>
-          <div>
-            <h4 className="font-semibold text-green-800">Level 3 Eco Influencer</h4>
-            <p className="text-sm text-green-700">
-              Share your journey to unlock exclusive rewards and inspire others!
-            </p>
-          </div>
+        {/* Engagement Stats */}
+        <div className="space-y-1">
+          <p className="font-semibold text-sm">{userStats.likes.toLocaleString()} likes</p>
+          <p className="text-sm">
+            <span className="font-semibold">eco_champion</span>{" "}
+            Making a difference one tree at a time! 🌱 Join me in creating a sustainable future. Every small action counts! #EcoWarrior #Sustainability
+          </p>
+          <p className="text-sm text-muted-foreground">
+            View all {userStats.comments} comments
+          </p>
+          <p className="text-xs text-muted-foreground uppercase">2 hours ago</p>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
